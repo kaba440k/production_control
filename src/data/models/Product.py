@@ -22,7 +22,7 @@ class Product(Base):
         index=True
     )
     batch_id: Mapped[int] = mapped_column(
-        ForeignKey("batches.id", on_delete="CASCADE"),
+        ForeignKey("batches.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
