@@ -32,6 +32,7 @@ db.sqlite3-journal
 .venv
 env/
 venv/
+test.py
 
 # IDE
 .vscode/
