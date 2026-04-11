@@ -43,7 +43,7 @@ class Product(Base):
         server_default=func.now(),
     )
 
-    batch: Mapped[List["Batch"]] = relationship(
+    batch: Mapped["Batch"] = relationship(
         "Batch",
         back_populates="products"
     )

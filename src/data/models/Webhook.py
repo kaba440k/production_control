@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from src.core.database import Base
 
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, func, UniqueConstraint, Index, Date, ARRAY, Integer, JSON
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, func, ARRAY, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 

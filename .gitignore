@@ -32,7 +32,7 @@ db.sqlite3-journal
 .venv
 env/
 venv/
-test.py
+
 
 # IDE
 .vscode/
@@ -44,3 +44,7 @@ test.py
 .DS_Store
 Thumbs.db
 DETAILED_ASSIGNMENT_FIXED.md
+
+# development spam
+test.py
+todo
