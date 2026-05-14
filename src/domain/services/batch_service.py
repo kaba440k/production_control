@@ -1,8 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
+from typing import Optional
 
+from src.domain.exceptions.BatchNotFoundException import BatchNotFoundException
 from src.data.models.WorkCenter import WorkCenter
 from src.data.models.Batch import Batch
-from src.api.v1.schemas.batch import BatchCreate
+from src.api.v1.schemas.batch import BatchCreate, BatchListResponse, BatchResponse
 from src.domain.exceptions.BatchAlreadyExistsException import BatchAlreadyExistsException
 from src.data.repositories.batch_repository import BatchRepository
 from src.data.repositories.work_center_repository import WorkCenterRepository
@@ -17,8 +19,7 @@ class BatchService:
 
     async def create_batch(self, batch_data : BatchCreate) -> Batch | None:
     #     1. Проверить, нет ли партии с таким номером и датой.
-        existing = await self.batch_repo.get_by_batch_number_and_date(batch_data.batch_number, batch_data.batch_date)
-        if existing:
+        if await self.batch_repo.exists_by_batch_number_and_date(batch_data.batch_number, batch_data.batch_date):
             raise BatchAlreadyExistsException(batch_data.batch_number, batch_data.batch_date)
 
     # 2. Найти WorkCenter по ИдентификаторРЦ.
@@ -47,6 +48,32 @@ class BatchService:
 
         return await self.batch_repo.get_with_products(created_batch.id)
 
-    # def _validate_batch_data(data : BatchCreate) -> None:
-    #
-    # def _validate_
+    async def get_batch(self, batch_id : int) -> Batch | None:
+        existed_batch = await self.batch_repo.get_with_products(batch_id)
+        if existed_batch is None:
+            raise BatchNotFoundException(batch_id)
+        return existed_batch
+
+    async def get_batches(
+            self,
+            is_closed: Optional[bool] = None,
+            batch_number: Optional[int] = None,
+            batch_date: Optional[date] = None,
+            shift: Optional[str] = None,
+            offset: int = 0,
+            limit: int = 20,
+    ) -> BatchListResponse:
+        items, total = await self.batch_repo.get_filtered(
+            is_closed=is_closed,
+            batch_number=batch_number,
+            batch_date=batch_date,
+            shift=shift,
+            offset=offset,
+            limit=limit,
+        )
+        return BatchListResponse(
+            items=[BatchResponse.model_validate(item) for item in items],
+            total=total,
+            skip=offset,
+            limit=limit,
+        )
