@@ -1,14 +1,14 @@
 from datetime import datetime, timezone, date
 from typing import Optional
 
+
 from src.domain.exceptions.BatchNotFoundException import BatchNotFoundException
 from src.data.models.WorkCenter import WorkCenter
 from src.data.models.Batch import Batch
-from src.api.v1.schemas.batch import BatchCreate, BatchListResponse, BatchResponse
+from src.api.v1.schemas.batch import BatchCreate, BatchListResponse, BatchResponse,BatchUpdate
 from src.domain.exceptions.BatchAlreadyExistsException import BatchAlreadyExistsException
 from src.data.repositories.batch_repository import BatchRepository
 from src.data.repositories.work_center_repository import WorkCenterRepository
-
 
 
 class BatchService:
@@ -53,6 +53,21 @@ class BatchService:
         if existed_batch is None:
             raise BatchNotFoundException(batch_id)
         return existed_batch
+
+    async def patch_batch(self, batch_id : int, batch_data : BatchUpdate) -> Batch | None:
+        existed_batch = await self.batch_repo.get_with_products(batch_id)
+        if existed_batch is None:
+            raise BatchNotFoundException(batch_id)
+
+        update_fields = batch_data.model_dump(exclude_unset=True)
+        if "is_closed" in update_fields:
+            if update_fields["is_closed"] is True:
+                update_fields["closed_at"] = datetime.now(timezone.utc)
+
+            if update_fields["is_closed"] is False:
+                update_fields["closed_at"] = None
+        await self.batch_repo.update(batch_id, **update_fields)
+        return await self.batch_repo.get_with_products(batch_id)
 
     async def get_batches(
             self,

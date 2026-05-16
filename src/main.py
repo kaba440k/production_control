@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.v1.routers import batchs
+from src.api.v1.routers import batches, products
 from src.core.config import settings
 from src.core.database import dispose_engine
 from src.core.exceptions import register_exception_handlers
@@ -66,7 +66,11 @@ register_exception_handlers(app)
 
 # Версия 1 API
 app.include_router(
-    batchs.router,
+    batches.router,
+    prefix=settings.api_v1_prefix,
+)
+app.include_router(
+    products.router,
     prefix=settings.api_v1_prefix,
 )
 

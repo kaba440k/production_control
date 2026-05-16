@@ -2,7 +2,6 @@ from datetime import datetime, date
 from typing import Optional, List
 
 from src.core.database import Base
-from src.data.models.Product import Product
 from src.data.models.WorkCenter import WorkCenter
 from sqlalchemy import String, Boolean, DateTime, ForeignKey, func, UniqueConstraint, Index, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship

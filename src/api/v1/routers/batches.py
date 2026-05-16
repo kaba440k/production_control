@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.v1.schemas.batch import BatchCreate, BatchResponse, BatchListResponse
+from src.api.v1.schemas.batch import BatchCreate, BatchResponse, BatchListResponse, BatchUpdate
 from src.core.database import get_db
 from src.data.repositories.batch_repository import BatchRepository
 from src.data.repositories.work_center_repository import WorkCenterRepository
@@ -59,3 +59,10 @@ async def get_batches(
              description="Получить партию по id с списком продукции")
 async def get_batch(batch_id: int, batch_service: BatchService = Depends(get_batch_service)):
     return await batch_service.get_batch(batch_id)
+
+@router.patch("/{batch_id}", response_model=BatchResponse,
+             status_code=status.HTTP_200_OK,
+             summary="Изменить партию",
+             description="Изменить партию по id")
+async def patch_batch(batch_id: int, batch_data : BatchUpdate, batch_service: BatchService = Depends(get_batch_service)):
+    return await batch_service.patch_batch(batch_id, batch_data)

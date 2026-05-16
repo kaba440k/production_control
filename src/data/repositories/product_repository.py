@@ -22,7 +22,7 @@ class ProductRepository(BaseRepository[Product]):
             Если передан is_aggregated, то фильтровать по статусу агрегации"""
         stmt = select(self.model).where(self.model.batch_id == batch_id)
         if is_aggregated is not None:
-            stmt = stmt.where(self.model.is_aggregated is is_aggregated)
+            stmt = stmt.where(self.model.is_aggregated == is_aggregated)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 

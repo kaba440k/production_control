@@ -17,33 +17,14 @@ class BatchBase(BaseSchema):
 
 
 class BatchCreate(BatchBase):
-    is_closed: bool = Field(default=False, alias="СтатусЗакрытия")
-    task_description: str = Field(
-        ...,
-        min_length=1,
-        max_length=2000,
-        alias="ПредставлениеЗаданияНаСмену",
-    )
-
-    work_center_name: str = Field(..., min_length=1, max_length=200, alias="РабочийЦентр")
+    work_center_name: str = Field(..., min_length=1, max_length=200)
     work_center_identifier: str = Field(
         ...,
         min_length=1,
         max_length=50,
-        alias="ИдентификаторРЦ",
     )
-
-    shift: str = Field(..., min_length=1, max_length=50, alias="Смена")
-    team: str = Field(..., min_length=1, max_length=100, alias="Бригада")
-
-    batch_number: int = Field(..., gt=0, alias="НомерПартии")
-    batch_date: date = Field(..., alias="ДатаПартии")
-
-    nomenclature: str = Field(..., min_length=1, max_length=200, alias="Номенклатура")
-    ekn_code: str = Field(..., min_length=1, max_length=100, alias="КодЕКН")
-
-    shift_start: datetime = Field(..., alias="ДатаВремяНачалаСмены")
-    shift_end: datetime = Field(..., alias="ДатаВремяОкончанияСмены")
+    shift_start: datetime
+    shift_end: datetime
 
     @model_validator(mode='after')
     def validate_shift_times(self) -> 'BatchCreate':
@@ -60,18 +41,18 @@ class BatchCreate(BatchBase):
         "json_schema_extra": {
             "examples": [
                 {
-                    "СтатусЗакрытия": False,
-                    "ПредставлениеЗаданияНаСмену": "Изготовить 1000 болтов М10",
-                    "РабочийЦентр": "Цех №1",
-                    "ИдентификаторРЦ": "RC-001",
-                    "Смена": "1 смена",
-                    "Бригада": "Бригада Иванова",
-                    "НомерПартии": 22222,
-                    "ДатаПартии": "2026-05-14",
-                    "Номенклатура": "Болт М10х50",
-                    "КодЕКН": "EKN-12345",
-                    "ДатаВремяНачалаСмены": "2026-05-14T08:00:00",
-                    "ДатаВремяОкончанияСмены": "2026-05-14T20:00:00",
+                    "is_closed": False,
+                    "task_description": "Изготовить 1000 болтов М10",
+                    "work_center_name": "Цех №1",
+                    "work_center_identifier": "RC-001",
+                    "shift": "1 смена",
+                    "team": "Бригада Иванова",
+                    "batch_number": 22222,
+                    "batch_date": "2026-05-14",
+                    "nomenclature": "Болт М10х50",
+                    "ekn_code": "EKN-12345",
+                    "shift_start": "2026-05-14T08:00:00",
+                    "shift_end": "2026-05-14T20:00:00",
                 }
             ]
         }
@@ -85,6 +66,22 @@ class BatchUpdate(BaseSchema):
     team: Optional[str] = Field(None, min_length=1, max_length=100)
     nomenclature: Optional[str] = Field(None, min_length=1, max_length=200)
     ekn_code: Optional[str] = Field(None, min_length=1, max_length=100)
+    model_config = {
+        "from_attributes": True,  # Для ORM моделей
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "is_closed": True,
+                    "task_description": "Новое описание задачи",
+                    "shift": "2 смена",
+                    "team": "Бригада Петрова",
+                    "nomenclature": "Гайка М12х50",
+                    "ekn_code": "EKN-67890",
+                }
+            ]
+
+        }
+    }
 
 
 class ProductResponse(BaseSchema):
@@ -101,6 +98,7 @@ class BatchResponse(BatchBase):
 
     created_at: datetime
     updated_at: datetime
+
     model_config = {
         "from_attributes": True,  # Для ORM моделей
         "json_schema_extra": {
@@ -111,14 +109,14 @@ class BatchResponse(BatchBase):
                     "closed_at": None,
                     "products": {
                         "id": 12314122,
-                         "unique_code": "AGSWDha1231ADJFSD-0sad12en",
-                         "aggregated_at": "2024-01-01T15:00:00"
+                        "unique_code": "AGSWDha1231ADJFSD-0sad12en",
+                        "aggregated_at": "2024-01-01T15:00:00"
                     },
                     "created_at": "2024-01-01T12:00:00",
                     "updated_at": "2024-01-02T12:00:00",
                 }
             ]
-            
+
         }
     }
 
