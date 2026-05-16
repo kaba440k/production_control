@@ -87,6 +87,7 @@ class BatchUpdate(BaseSchema):
 class ProductResponse(BaseSchema):
     id: int
     unique_code: str
+    is_aggregated: bool
     aggregated_at: Optional[datetime] = None
 
 
@@ -110,6 +111,7 @@ class BatchResponse(BatchBase):
                     "products": {
                         "id": 12314122,
                         "unique_code": "AGSWDha1231ADJFSD-0sad12en",
+                        "is_aggregated": True,
                         "aggregated_at": "2024-01-01T15:00:00"
                     },
                     "created_at": "2024-01-01T12:00:00",
@@ -126,3 +128,31 @@ class BatchListResponse(BaseSchema):
     total: int
     skip: int = 0
     limit: int = 20
+
+
+class ProductAggregateRequest(BaseSchema):
+    unique_codes : List[str]
+    model_config = {
+        "from_attributes": True,  # Для ORM моделей
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "unique_codes": ["CODE001", "CODE002"]
+                }
+            ]
+
+        }
+    }
+
+
+class ProductAggregateError(BaseSchema):
+    unique_code : str
+    reason : str
+
+
+class ProductAggregateResponse(BaseSchema):
+    success: bool
+    total: int
+    aggregated : int
+    failed : int
+    errors : List[ProductAggregateError]

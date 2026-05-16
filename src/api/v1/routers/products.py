@@ -21,5 +21,12 @@ def get_product_service(db: AsyncSession = Depends(get_db)) -> ProductService:
              status_code=status.HTTP_201_CREATED,
              summary="Создать продукцию",
              description="Создать новую продукцию для конкретной партии", )
-async def create_product(product_data: ProductCreate, product_service: ProductService= Depends(get_product_service)):
+async def create_product(product_data: ProductCreate, product_service: ProductService = Depends(get_product_service)):
     return await product_service.create_product(product_data)
+
+@router.get("/{product_id}",response_model=ProductResponse,
+             status_code=status.HTTP_200_OK,
+             summary="Получить продукцию",
+             description="Получить продукцию по id")
+async def get_product(product_id: int, product_service: ProductService = Depends(get_product_service)):
+    return await product_service.get_product(product_id)

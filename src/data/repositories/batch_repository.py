@@ -1,6 +1,6 @@
 from datetime import date
 from os.path import exists
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import select, exists, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +39,7 @@ class BatchRepository(BaseRepository[Batch]):
             is_closed: Optional[bool] = None,
             batch_number: Optional[int] = None,
             batch_date: Optional[date] = None,
+            work_center_id: Optional[int] = None,
             shift: Optional[str] = None,
             offset: int = 0,
             limit: int = 20,
@@ -57,6 +58,9 @@ class BatchRepository(BaseRepository[Batch]):
 
         if batch_date is not None:
             filters.append(self.model.batch_date == batch_date)
+
+        if work_center_id is not None:
+            filters.append(self.model.work_center_id == work_center_id)
 
         if shift is not None:
             filters.append(self.model.shift == shift)

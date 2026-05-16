@@ -1,5 +1,6 @@
 from src.domain.exceptions.BatchNotFoundException import BatchNotFoundException
 from src.domain.exceptions.ProductAlreadyExistsException import ProductAlreadyExistsException
+from src.domain.exceptions.ProductNotFoundException import ProductNotFoundException
 from src.api.v1.schemas.product import ProductCreate
 from src.data.repositories.batch_repository import BatchRepository
 from src.data.repositories.product_repository import ProductRepository
@@ -25,3 +26,10 @@ class ProductService:
             unique_code = product_data.unique_code
         )
         return created_product
+
+    async def get_product(self, product_id : int) -> Product | None:
+        existed_product = await self.product_repo.get(product_id)
+        if existed_product is None:
+            raise ProductNotFoundException(product_id)
+        return existed_product
+
